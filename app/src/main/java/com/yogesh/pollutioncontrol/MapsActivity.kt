@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.StringRequestListener
@@ -12,6 +13,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
@@ -20,7 +23,7 @@ import com.google.maps.android.heatmaps.WeightedLatLng
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-	private lateinit var mMap: GoogleMap
+	private lateinit var map: GoogleMap
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -44,12 +47,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 	 * installed Google Play services and returned to the app.
 	 */
 	override fun onMapReady(googleMap: GoogleMap) {
-		mMap = googleMap
-
-		// Add a marker in Sydney and move the camera
-		val bangalore = LatLng(12.9716, 77.5946)
-//		mMap.addMarker(MarkerOptions().position(bangalore).title("Marker in Bangalore"))
-		mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(12.0, 77.0)))
+		map = googleMap
+		map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(12.0, 77.0)))
 
 		fetchThingSpeakApi()
 	}
@@ -69,16 +68,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 										Log.i("MapsActivity", "pollution2: $pollution2")
 										val pollutionLevel2 = pollution2.toDouble()
 
-										val mProvider = HeatmapTileProvider.Builder()
+										val nmit = LatLng(13.1285, 77.5873)
+										val centralBlr = LatLng(12.9716, 77.5946)
 
+										val heatmap = HeatmapTileProvider.Builder()
 												.weightedData(listOf(
-														WeightedLatLng(LatLng(13.1285, 77.5873), pollutionLevel1),
-														WeightedLatLng(LatLng(12.9716, 77.5946), pollutionLevel2)
+														WeightedLatLng(nmit, pollutionLevel1),
+														WeightedLatLng(centralBlr, pollutionLevel2)
 												))
-
 												.gradient(Gradient(intArrayOf(Color.GREEN, Color.BLACK), floatArrayOf(0.25F, 0.5F)))
 												.build()
-										mMap.addTileOverlay(TileOverlayOptions().tileProvider(mProvider))
+
+										val marker1 = MarkerOptions().position(nmit).title(pollution1)
+										val marker2 = MarkerOptions().position(centralBlr).title(pollution2)
+
+										map.clear()
+										map.addTileOverlay(TileOverlayOptions().tileProvider(heatmap))
+										map.addMarker(marker1)
+										map.addMarker(marker2)
+
+										val builder = LatLngBounds.Builder()
+										builder.include(nmit)
+										builder.include(centralBlr)
+										val bounds = builder.build()
+										val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 150)
+										map.moveCamera(cameraUpdate)
 									}
 
 									override fun onError(anError: ANError?) {
@@ -91,5 +105,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 					}
 
 				})
+	}
+
+	fun refreshData(view: View) {
+		fetchThingSpeakApi()
 	}
 }
