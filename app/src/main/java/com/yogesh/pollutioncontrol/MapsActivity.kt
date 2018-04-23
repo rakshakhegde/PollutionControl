@@ -68,7 +68,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 										Log.i("MapsActivity", "pollution2: $pollution2")
 										val pollutionLevel2 = pollution2.toDouble()
 
-										val chikmaglur = LatLng(13.1285, 77.5873)
+										val chikmaglur = LatLng(13.3153, 75.7754)
 										val bangalore = LatLng(12.9716, 77.5946)
 
 										val heatmap = HeatmapTileProvider.Builder()
