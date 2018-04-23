@@ -68,19 +68,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 										Log.i("MapsActivity", "pollution2: $pollution2")
 										val pollutionLevel2 = pollution2.toDouble()
 
-										val nmit = LatLng(13.1285, 77.5873)
-										val centralBlr = LatLng(12.9716, 77.5946)
+										val chikmaglur = LatLng(13.1285, 77.5873)
+										val bangalore = LatLng(12.9716, 77.5946)
 
 										val heatmap = HeatmapTileProvider.Builder()
 												.weightedData(listOf(
-														WeightedLatLng(nmit, pollutionLevel1),
-														WeightedLatLng(centralBlr, pollutionLevel2)
+														WeightedLatLng(chikmaglur, pollutionLevel1),
+														WeightedLatLng(bangalore, pollutionLevel2)
 												))
 												.gradient(Gradient(intArrayOf(Color.GREEN, Color.BLACK), floatArrayOf(0.25F, 0.5F)))
 												.build()
 
-										val marker1 = MarkerOptions().position(nmit).title(pollution1)
-										val marker2 = MarkerOptions().position(centralBlr).title(pollution2)
+										val marker1 = MarkerOptions().position(chikmaglur).title(pollution1)
+										val marker2 = MarkerOptions().position(bangalore).title(pollution2)
 
 										map.clear()
 										map.addTileOverlay(TileOverlayOptions().tileProvider(heatmap))
@@ -88,8 +88,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 										map.addMarker(marker2)
 
 										val builder = LatLngBounds.Builder()
-										builder.include(nmit)
-										builder.include(centralBlr)
+										builder.include(chikmaglur)
+										builder.include(bangalore)
 										val bounds = builder.build()
 										val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 150)
 										map.moveCamera(cameraUpdate)
